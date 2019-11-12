@@ -2,12 +2,15 @@ package cgtrabalho;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+import java.util.Arrays;
 import javax.swing.*;
  
 public class TelaCg extends JPanel {
   int scale = 50;
- 
+    int[] poligonoX = {1, 1, 2, 3, 4, 4, 3 , 2 ,1};
+    int[] poligonoY = {2, 3, 4, 4, 3, 2, 1, 1, 2};
+    int pontos = 9;
+    
     public int getLargura(){ // largura da tela
         return this.getWidth();
     }
@@ -31,28 +34,32 @@ public class TelaCg extends JPanel {
     }
     
     public Graphics2D gira(Graphics2D g, int graus){
-        AffineTransform rotA = new AffineTransform();
-        rotA.translate(getMetadeLargura(), getMetadeAltura());
-        rotA.rotate(Math.toRadians(graus));
-        rotA.translate(getMetadeLargura()*-1, getMetadeAltura()*-1);
-        g.transform(rotA);
+       
         return g;
     }
     
-    public Graphics2D move(Graphics2D g, int x, int y){
-       AffineTransform tranA = new AffineTransform();
-        tranA.translate(x,y);
-        g.transform(tranA);
-        return g;
+    public int[] mover(int[] pontos, int mult){
+        int[] nvPont = Arrays.copyOf(pontos, pontos.length);
+        for (int i = 0; i < pontos.length; i++) {
+            nvPont[i] = nvPont[i] + mult;
+        }
+        return nvPont;
+    }
+    public Polygon criarPolig(int[] pontosX, int[] pontosY){
+        Polygon poli = new Polygon();
+        for (int i = 0; i < pontos; i++) {
+            poli.addPoint(obterPxL(pontosX[i]), obterPxA(pontosY[i])); 
+            poli.addPoint(obterPxL(pontosX[i]), obterPxA(pontosY[i])); 
+        }
+        return poli;
     }
     
-    public Graphics2D aumenta(Graphics2D g, int x, int y){
-        AffineTransform escA = new AffineTransform();
-        escA.translate(getMetadeLargura(), getMetadeAltura());
-        escA.scale(2,2);
-        escA.translate(-getMetadeLargura(), -getMetadeAltura());
-        g.transform(escA);
-        return g;
+    public int[] escalar(int[] pontos, int mult){
+        int[] nvPont = Arrays.copyOf(pontos, pontos.length);
+        for (int i = 0; i < pontos.length; i++) {
+            nvPont[i] = nvPont[i] * mult;
+        }
+        return nvPont;
     }
     
     
@@ -89,61 +96,60 @@ public class TelaCg extends JPanel {
       }
       //DESENHANDO O POLIGONO
         // L 
-        int x[] = {1, 1, 2, 3, 4, 4, 3 , 2 ,1}; 
+        //int x[] = {1, 1, 2, 3, 4, 4, 3 , 2 ,1}; 
         // A 
-        int y[] = {2,3,4,4,3,2,1,1,2}; 
+        //int y[] = {2,3,4,4,3,2,1,1,2}; 
         // pontos 
-        int pontos = 9; 
-        Polygon poly = new Polygon();
-        // set the color of line drawn to blue 
-        g.setColor(Color.GREEN); 
-        for (int i = 0; i < pontos; i++) {
-            //g.drawLine(obterPxL(x[i]), obterPxL(y[i])); 
-            poly.addPoint(obterPxL(x[i]), obterPxA(y[i])); 
-      }
-        g.drawPolygon(poly);
         //ORIGEM PRONTA
         
         /*
         ROTA플O A : MAGENTA
         TRANSLA플O A: RED
-        ESCALA A: BLUE 
+        ESCALA A: BLUE
         
         
-        
-        ESCALA B: ORANGE
-        ROTA플O B : DARK GRAY
-        TRANSLA플O B: CYAN
-        
-        */
-        AffineTransform backup = g.getTransform();
-    
        // A
         g.setColor(Color.MAGENTA);
         g = gira(g,60);
-        g.drawPolygon(poly);
+        g.drawPolygon(polyA);
         
         g.setColor(Color.RED);
         g = move(g,3,2);
+        g.drawPolygon(polyA);
+       */
+        
+        Polygon poly = criarPolig(poligonoX, poligonoY);
+        g.setColor(Color.GREEN); 
         g.drawPolygon(poly);
-       
+        
+        
+        g.setColor(Color.RED);
+        poly = criarPolig(mover(poligonoX, 2), mover(poligonoY, 2));
+        g.drawPolygon(poly);
+        
+        
         g.setColor(Color.BLUE);
-        g = aumenta(g,2,2);
+        poly = criarPolig(escalar(mover(poligonoX, 3),2), escalar(mover(poligonoY, 2),2));
         g.drawPolygon(poly);
+        
+        /*
+        ESCALA B: ORANGE
+        ROTA플O B : DARK GRAY
+        TRANSLA플O B: CYAN
+            
        
-        g.setTransform(backup);
         g.setColor(Color.ORANGE);
-        g = aumenta(g, 2, 2);
-        g.drawPolygon(poly);
+        g = aumenta(polyB, 2, 2);
+        g.drawPolygon(polyB);
         
         g.setColor(Color.DARK_GRAY);
         g = gira(g, 60);
-        g.drawPolygon(poly);
+        g.drawPolygon(polyB);
         
         g.setColor(Color.CYAN);
         g = move(g, 3,2);
-        g.drawPolygon(poly);
-        
+        g.drawPolygon(polyB);
+        */
   }
  
   public static void main(String[] args) {

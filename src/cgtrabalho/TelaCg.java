@@ -7,10 +7,9 @@ import javax.swing.*;
  
 public class TelaCg extends JPanel {
   int scale = 50;
-    int[] poligonoX = {1, 1, 2, 3, 4, 4, 3 , 2 ,1};
-    int[] poligonoY = {2, 3, 4, 4, 3, 2, 1, 1, 2};
+
     int pontos = 9;
-    
+
     public int getLargura(){ // largura da tela
         return this.getWidth();
     }
@@ -26,48 +25,56 @@ public class TelaCg extends JPanel {
         return this.getHeight()/2;
     }
     
-    public int obterPxL(int px){
+    public double obterPxL(double px){
         return getMetadeLargura()+(scale*px);
     }
-    public int obterPxA(int px){
+    public double obterPxA(double px){
         return getMetadeAltura()-(scale*px);
     }
     
-    public Graphics2D gira(Graphics2D g, int graus){
-       
-        return g;
+    public Polygon gira(double[] pontosX,double[] pontosY, int graus) {
+        int i;
+        double x1, y1;
+        double radiano = Math.toRadians(graus), cos = Math.cos(radiano), sin = Math.sin(radiano);
+        for (i = 0; i < pontosY.length; i++) {
+            x1 = pontosX[i];
+            y1 = pontosY[i];
+            pontosX[i] =  (x1 * cos - y1 * sin);
+            pontosY[i] =  (y1 * cos + x1 * sin);
+        }
+        return criarPolig(pontosX, pontosY);
     }
     
-    public int[] mover(int[] pontos, int mult){
-        int[] nvPont = Arrays.copyOf(pontos, pontos.length);
+    public double[] mover(double[] pontos, double mult){
+        double[] nvPont = Arrays.copyOf(pontos, pontos.length);
         for (int i = 0; i < pontos.length; i++) {
             nvPont[i] = nvPont[i] + mult;
         }
         return nvPont;
     }
-    public Polygon criarPolig(int[] pontosX, int[] pontosY){
+    public Polygon criarPolig(double[] pontosX, double[] pontosY){
         Polygon poli = new Polygon();
         for (int i = 0; i < pontos; i++) {
-            poli.addPoint(obterPxL(pontosX[i]), obterPxA(pontosY[i])); 
-            poli.addPoint(obterPxL(pontosX[i]), obterPxA(pontosY[i])); 
+            poli.addPoint((int)obterPxL(pontosX[i]), (int)obterPxA(pontosY[i])); 
+            poli.addPoint((int)obterPxL(pontosX[i]), (int)obterPxA(pontosY[i])); 
         }
         return poli;
     }
     
-    public int[] escalar(int[] pontos, int mult){
-        int[] nvPont = Arrays.copyOf(pontos, pontos.length);
+    public double[] escalar(double[] pontos, double mult){
         for (int i = 0; i < pontos.length; i++) {
-            nvPont[i] = nvPont[i] * mult;
+            pontos[i] = pontos[i] * mult;
         }
-        return nvPont;
+        return pontos;
     }
-    
-    
-    
     
   public void paintComponent(Graphics g2) {
       Graphics2D g = (Graphics2D) g2;
-     //Horizontal
+     //Horizontal     
+       
+     try{
+         
+     
      g.setColor(Color.BLACK);
      g.drawLine(0, getMetadeAltura(), this.getLargura(), getMetadeAltura());
  
@@ -80,9 +87,9 @@ public class TelaCg extends JPanel {
      
       for (int div = (qtdEscalasL/2)*-1; div <= ((qtdEscalasL/2)); div++) {
           g.setColor(Color.BLACK);
-          g.drawLine(obterPxL(div), getMetadeAltura()-15 , obterPxL(div), getMetadeAltura()+15);
+          g.drawLine((int)obterPxL(div), getMetadeAltura()-15 , (int)obterPxL(div), getMetadeAltura()+15); //desenhando a reta
           g.setColor(Color.BLUE);
-          g.drawString(String.valueOf(div), obterPxL(div)+5, getMetadeAltura()-10);
+          g.drawString(String.valueOf(div), (int)obterPxL(div)+5, getMetadeAltura()-10);
       }
       
       for (int div = (qtdEscalasA/2)*-1; div <= ((qtdEscalasA/2)); div++) {
@@ -90,66 +97,59 @@ public class TelaCg extends JPanel {
               continue;
           }
           g.setColor(Color.BLACK);
-          g.drawLine(getMetadeLargura()-15 , obterPxA(div) , getMetadeLargura()+15 ,obterPxA(div));
+          g.drawLine(getMetadeLargura()-15 , (int)obterPxA(div) , getMetadeLargura()+15 ,(int)obterPxA(div));
           g.setColor(Color.BLUE);
-          g.drawString(String.valueOf(div),getMetadeLargura()+15 ,obterPxA(div)+10);
+          g.drawString(String.valueOf(div),getMetadeLargura()+15 ,(int)obterPxA(div)+10);
       }
       //DESENHANDO O POLIGONO
-        // L 
-        //int x[] = {1, 1, 2, 3, 4, 4, 3 , 2 ,1}; 
-        // A 
-        //int y[] = {2,3,4,4,3,2,1,1,2}; 
-        // pontos 
-        //ORIGEM PRONTA
         
-        /*
-        ROTA플O A : MAGENTA
-        TRANSLA플O A: RED
-        ESCALA A: BLUE
+       // ROTA플O A : MAGENTA
+       // TRANSLA플O A: RED
+       // ESCALA A: BLUE
+        double[] poligonoXA = {0.3, 0.5, 0.9, 1.3, 1.6, 2.8, 2.2 , 1.8,0.2};
+        double[] poligonoYA = {0.2, 1.2, 2.7, 2.8, 1.3, 0.9, 0.5, 0.6, 1.1};
         
-        
-       // A
-        g.setColor(Color.MAGENTA);
-        g = gira(g,60);
-        g.drawPolygon(polyA);
-        
-        g.setColor(Color.RED);
-        g = move(g,3,2);
-        g.drawPolygon(polyA);
-       */
-        
-        Polygon poly = criarPolig(poligonoX, poligonoY);
+        Polygon poly = criarPolig(poligonoXA, poligonoYA);
         g.setColor(Color.GREEN); 
         g.drawPolygon(poly);
         
+        /*
+        
+        g.setColor(Color.MAGENTA);
+        poly = gira(poligonoXA,poligonoYA,60);
+        g.drawPolygon(poly);
         
         g.setColor(Color.RED);
-        poly = criarPolig(mover(poligonoX, 2), mover(poligonoY, 2));
+        poly = criarPolig(mover(poligonoXA, 2), mover(poligonoYA, 2));
         g.drawPolygon(poly);
-        
         
         g.setColor(Color.BLUE);
-        poly = criarPolig(escalar(mover(poligonoX, 3),2), escalar(mover(poligonoY, 2),2));
+        poly = criarPolig(escalar(poligonoXA,3), escalar(poligonoYA,2));
+        g.drawPolygon(poly);
+    
+        */
+        double[] poligonoXB = {0.3, 0.5, 0.9, 1.3, 1.6, 2.8, 2.2 , 1.8,0.2};
+        double[] poligonoYB = {0.2, 1.2, 2.7, 2.8, 1.3, 0.9, 0.5, 0.6, 1.1};
+        
+       // ESCALA B: ORANGE
+      //  ROTA플O B : DARK GRAY
+      //  TRANSLA플O B: CYAN
+      
+        g.setColor(Color.ORANGE);
+        poly = criarPolig(escalar(poligonoXB,3), escalar(poligonoYB,2));
         g.drawPolygon(poly);
         
-        /*
-        ESCALA B: ORANGE
-        ROTA플O B : DARK GRAY
-        TRANSLA플O B: CYAN
-            
-       
-        g.setColor(Color.ORANGE);
-        g = aumenta(polyB, 2, 2);
-        g.drawPolygon(polyB);
-        
-        g.setColor(Color.DARK_GRAY);
-        g = gira(g, 60);
-        g.drawPolygon(polyB);
+        g.setColor(Color.PINK);
+        poly = gira(poligonoXB,poligonoYB,60);
+        g.drawPolygon(poly);
         
         g.setColor(Color.CYAN);
-        g = move(g, 3,2);
-        g.drawPolygon(polyB);
-        */
+        poly = criarPolig(mover(poligonoXB, 2), mover(poligonoYB, 2));
+        g.drawPolygon(poly);
+        
+       }finally{
+      g = null;
+  }
   }
  
   public static void main(String[] args) {
@@ -160,6 +160,7 @@ public class TelaCg extends JPanel {
     frame.setSize(800, 600);
     TelaCg panel = new TelaCg();
     frame.add(panel);
+    frame.setState(Frame.MAXIMIZED_BOTH);
     frame.setVisible(true);
   }
 }
